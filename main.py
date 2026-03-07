@@ -28,7 +28,7 @@ def home():
 
 
 # -------------------------------
-# Send task from frontend
+# Frontend send task
 # -------------------------------
 @app.post("/send-task")
 def send_task(data: dict):
@@ -44,7 +44,12 @@ def send_task(data: dict):
 @app.get("/get-task")
 def get_task():
 
-    return task_store.get("task", {})
+    task = task_store.get("task")
+
+    # IMPORTANT FIX
+    task_store["task"] = None
+
+    return task
 
 
 # -------------------------------
@@ -64,17 +69,16 @@ def submit_result(data: dict):
 @app.get("/get-result")
 def get_result():
 
-    result = result_store.get("result", {})
+    result = result_store.get("result")
 
-    # Reset after sending
-    result_store["result"] = {}
-    task_store["task"] = {}
+    # clear result after sending
+    result_store["result"] = None
 
     return result
 
 
 # -------------------------------
-# Self ping function
+# Self ping (keep render alive)
 # -------------------------------
 def keep_alive():
 
@@ -90,7 +94,6 @@ def keep_alive():
 
             print("Ping error:", e)
 
-        # 10 minutes
         time.sleep(600)
 
 
